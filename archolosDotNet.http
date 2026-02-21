@@ -1,0 +1,6 @@
+@archolosDotNet_HostAddress = http://localhost:5080
+
+GET {{archolosDotNet_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
