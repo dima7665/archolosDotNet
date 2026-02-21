@@ -1,14 +1,7 @@
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Text.Json;
+using archolosDotNet.EF;
 using archolosDotNet.Models;
 using archolosDotNet.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace archolosDotNet.Controllers
 {
@@ -16,8 +9,28 @@ namespace archolosDotNet.Controllers
     [ApiController]
     public class ItemController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
+
+        public ItemController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
-        public ActionResult<List<Item>> GetAll() => ItemService.GetAll();
+        public ActionResult<List<Item>> GetAll()
+        {
+            var it = _context.Items.FirstOrDefault();
+            Console.WriteLine("--- ", _context.Items.Count());
+            if (it == null)
+            {
+                Console.WriteLine("NO ITEM");
+            } else
+            {
+                Console.WriteLine("ITEM: " + it.Name);
+            }
+
+            return ItemService.GetAll();
+        }
 
         [HttpGet("{id}")]
         public ActionResult<Item> Get(int id)
@@ -35,6 +48,10 @@ namespace archolosDotNet.Controllers
         [HttpPost]
         public IActionResult Create(Item item)
         {
+
+            _context.Items.Add(item);
+            _context.SaveChanges();
+
             ItemService.Create(item);
             return CreatedAtAction(nameof(Create), new { id = item.Id }, item);
         }

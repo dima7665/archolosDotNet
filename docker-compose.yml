@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  dotnetPostgresDB:
+    image: postgres:latest
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ps12345
+      POSTGRESS_DB: archolos
+    networks:
+      - dotnet
+    #
+    # для того щоб дані зберігалися після закриття контейнера
+    # volumes:
+    #   - ./.containers/archolos-db:/var/lib/postgresql/data
+    #
+    # або так
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+    # webapi:
+    #   biuld: .
+    #   container_name: webapi_container
+    #   ports:
+    #   - "8080:80"
+    #   depends_on:
+    #     - dotnetPostgresDB
+    #   environment:
+    #     - ConnectionStrings: Database=Host=dotnetPostgresDB;Port=5432;Database=archolos;Username=postgres;Password=ps12345;
+
+networks:
+  dotnet:
+
+volumes:
+  pgdata:
