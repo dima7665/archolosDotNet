@@ -11,8 +11,8 @@ using archolosDotNet.EF;
 namespace archolosDotNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260221105748_Init")]
-    partial class Init
+    [Migration("20260223122114_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,25 +24,34 @@ namespace archolosDotNet.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("archolosDotNet.Models.Item", b =>
+            modelBuilder.Entity("archolosDotNet.Models.BaseItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("additionalInfo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Price")
+                    b.Property<int>("price")
                         .HasColumnType("integer");
 
-                    b.Property<decimal?>("Temp")
-                        .HasColumnType("numeric");
+                    b.PrimitiveCollection<string[]>("sources")
+                        .HasColumnType("text[]");
 
-                    b.HasKey("Id");
+                    b.Property<int>("type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("id");
 
                     b.ToTable("Items");
                 });

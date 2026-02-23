@@ -10,6 +10,6 @@ namespace archolosDotNet.EF
         { }
 
         // Tables in db
-        public DbSet<Item> Items { get; set; } = default!;
+        public DbSet<BaseItem> Items { get; set; } = default!;
     }
 }

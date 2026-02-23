@@ -1,0 +1,7 @@
+[*.cs]
+dotnet_naming_rule.camel_case_locals.symbols = camel_case_symbols
+dotnet_naming_rule.camel_case_locals.style = camel_case_style
+dotnet_naming_rule.camel_case_locals.severity = suggestion
+
+dotnet_naming_symbols.camel_case_symbols.applicable_kinds = local, parameter
+dotnet_naming_style.camel_case_style.capitalization = camel_case

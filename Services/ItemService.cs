@@ -4,30 +4,30 @@ namespace archolosDotNet.Services;
 
 public static class ItemService
 {
-    static List<Item> Items { get; }
+    static List<BaseItem> Items { get; }
 
     static ItemService()
     {
         Items = [
-            new Item { Id = 1, Name = "Item 1" },
-            new Item { Id = 2, Name = "Item 2" },
+            // new BaseItem { id = 1, name = "Item 1", type = ItemType.Food },
+            // new BaseItem { id = 2, name = "Item 2", type = ItemType.Weapon },
         ];
     }
 
-    public static List<Item> GetAll() => Items;
+    public static List<BaseItem> GetAll() => Items;
 
-    public static Item? Get(int id) => Items.FirstOrDefault(p => p.Id == id);
+    public static BaseItem? Get(int id) => Items.FirstOrDefault(p => p.id == id);
 
-    public static void Create(Item data)
+    public static void Create(BaseItem data)
     {
-        int last = Items.Last().Id;
-        data.Id = last + 1;
+        int last = Items.Last().id;
+        data.id = last + 1;
         Items.Add(data);
     }
 
-    public static Item? Update(Item data)
+    public static BaseItem? Update(BaseItem data)
     {
-        var index = Items.FindIndex(i => i.Id == data.Id);
+        var index = Items.FindIndex(i => i.id == data.id);
 
         if (index == -1)
         {

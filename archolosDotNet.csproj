@@ -13,8 +13,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.12.46" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models/Item/Consumable/" />
+    <Folder Include="Models/Item/Weapon/" />
   </ItemGroup>
 
 </Project>

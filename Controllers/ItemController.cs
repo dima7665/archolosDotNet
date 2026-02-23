@@ -1,7 +1,10 @@
+using System.Runtime.Serialization;
 using archolosDotNet.EF;
 using archolosDotNet.Models;
 using archolosDotNet.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi;
+using Newtonsoft.Json;
 
 namespace archolosDotNet.Controllers
 {
@@ -17,25 +20,19 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Item>> GetAll()
+        public ActionResult<List<BaseItem>> GetAll()
         {
-            var it = _context.Items.FirstOrDefault();
-            Console.WriteLine("--- ", _context.Items.Count());
-            if (it == null)
-            {
-                Console.WriteLine("NO ITEM");
-            } else
-            {
-                Console.WriteLine("ITEM: " + it.Name);
-            }
+            return _context.Items.ToList();
 
-            return ItemService.GetAll();
+            // працює, в Yaak приходить обєкт(чи список об'єктів) із зміненим енумом, але тип повернення у цьому методі string
+            // return JsonConvert.SerializeObject(Item);
+            // return JsonConvert.SerializeObject(_context.Items.ToList())
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Item> Get(int id)
+        public ActionResult<BaseItem> Get(int id)
         {
-            var item = ItemService.Get(id);
+            var item = _context.Items.Find(id);
 
             if (item == null)
             {
@@ -46,18 +43,20 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Item item)
+        public IActionResult Create(BaseItemDto _item)
         {
-
+            var item = new BaseItem(_item);
             _context.Items.Add(item);
             _context.SaveChanges();
 
-            ItemService.Create(item);
-            return CreatedAtAction(nameof(Create), new { id = item.Id }, item);
+            return CreatedAtAction(nameof(Create), new BaseItemDto(item)
+            {
+                id = item.id
+            }, item);
         }
 
         [HttpPut]
-        public IActionResult Update(Item data)
+        public IActionResult Update(BaseItem data)
         {
             var item = ItemService.Update(data);
 
