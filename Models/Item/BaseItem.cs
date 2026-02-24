@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using archolosDotNet.Models.Item.Consumable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -25,6 +26,8 @@ public class _BaseItem
 public class BaseItem : _BaseItem
 {
     public required ItemType type { get; set; }
+
+    public ICollection<ConsumableStat> consumableStats { get; } = [];
 
     public BaseItem() : base() { }
 
@@ -56,6 +59,10 @@ public class BaseItem : _BaseItem
         };
     }
 }
+
+// ------------------------
+// TODO: Треба видалити пертворення енума в стрінгу - забагато ускладнень
+// ------------------------
 
 public class BaseItemDto : _BaseItem
 {
