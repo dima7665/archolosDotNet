@@ -1,28 +1,29 @@
 using archolosDotNet.EF;
 using archolosDotNet.Models;
 using archolosDotNet.Models.Item.Consumable;
-using archolosDotNet.Models.Item.Enums;
+using archolosDotNet.Services.Item;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace archolosDotNet.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ConsumableController(ApplicationDbContext context) : ControllerBase
+    public class ConsumableController(ApplicationDbContext context, IConsumableService service) : ControllerBase
     {
         private readonly ApplicationDbContext dbContext = context;
+        private readonly IConsumableService consumableService = service;
 
         [HttpGet]
         public ActionResult<List<BaseItem>> GetAll()
         {
-            return dbContext.Items.Where(i => i.type == ItemType.Food || i.type == ItemType.Potion).Include(i => i.consumableStats).ToList();
+            return consumableService.GetAll();
         }
 
         [HttpGet("{id}")]
         public ActionResult<BaseItem> Get(int id)
         {
-            var item = dbContext.Items.Include(i => i.consumableStats).SingleOrDefault(i => i.id == id);
+            var item = consumableService.GetById(id);
 
             if (item == null)
             {
@@ -33,100 +34,71 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Consumable data)
+        public async Task<ActionResult<BaseItem>> Create(Consumable data)
         {
             var stats = data.consumableStats;
 
             if (stats == null || stats.Count < 1)
             {
-                return BadRequest();
+                return BadRequest("Consumable should have at least one stat");
             }
-
-            using var transaction = await dbContext.Database.BeginTransactionAsync();
 
             try
             {
-                // Create item
-                dbContext.Items.Add(data);
-                await dbContext.SaveChangesAsync();
-
-                var item = dbContext.Items.Find(data.id);
-
-                // Add stats to created item
-                foreach (ConsumableStat stat in stats)
-                {
-                    // item?.consumableStats.Add(stat.toStat(data.id));
-                    item!.consumableStats!.Add(stat.withId(data.id));
-                }
-
-                await dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return Ok(data);
+                return Ok(consumableService.Create(data));
             }
             catch (Exception e)
             {
-                return UnprocessableEntity(e);
+                if (e.InnerException is PostgresException npgex && npgex.SqlState == PostgresErrorCodes.UniqueViolation)
+                {
+                    return Conflict("Duplicate stats error: check combinations of name and if it is permanent");
+                }
+
+                return UnprocessableEntity("Invalid data");
             }
         }
 
-        // [HttpPut]
-        // public IActionResult Update(ConsumableStat data)
-        // {
-        //     var item = dbContext.ConsumableStats.FirstOrDefault(i => i.id == data.id);
+        [HttpPut]
+        public IActionResult Update(Consumable data)
+        {
+            var stats = data.consumableStats;
 
-        //     if (item == null)
-        //     {
-        //         return NotFound();
-        //     }
+            if (stats == null || stats.Count < 1)
+            {
+                return BadRequest("Consumable should have at least one stat");
+            }
 
-        //     // dbContext.SaveChanges();
+            try
+            {
+                var result = consumableService.Update(data);
 
-        //     return Ok();
-        // }
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException is PostgresException npgex && npgex.SqlState == PostgresErrorCodes.UniqueViolation)
+                {
+                    return Conflict("Duplicate stats error: check combinations of name and if it is permanent");
+                }
+
+                return UnprocessableEntity("Invalid data");
+            }
+        }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var item = dbContext.Items.Find(id);
+            var result = consumableService.Delete(id);
 
-            if (item == null)
+            if (result == null)
             {
                 return NotFound();
             }
-
-            dbContext.Items.Remove(item);
-            dbContext.SaveChanges();
-
-            return NoContent();
-        }
-
-        [HttpGet("stats")]
-        public ActionResult<List<ConsumableStat>> GetAllStats()
-        {
-            return dbContext.ConsumableStats.ToList();
-        }
-
-        // [HttpPost("stats")]
-        // public ActionResult<ConsumableStat> CreateStat(ConsumableStat data)
-        // {
-        //     dbContext.ConsumableStats.Add(data);
-        //     dbContext.SaveChanges();
-        //     return Ok(data);
-        // }
-
-        [HttpDelete("stats/{id}")]
-        public IActionResult DeleteStat(int id)
-        {
-            var item = dbContext.ConsumableStats.Find(id);
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            dbContext.ConsumableStats.Remove(item);
-            dbContext.SaveChanges();
 
             return NoContent();
         }

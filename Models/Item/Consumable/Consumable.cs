@@ -26,7 +26,7 @@ public class ConsumableStat
 
     [Key]
     public int id { get; set; }
-
+ 
     public int consumableId { get; set; } // Foreign key
 
     public ConsumableStat withId(int id)

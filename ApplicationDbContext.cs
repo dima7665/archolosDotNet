@@ -21,6 +21,7 @@ namespace archolosDotNet.EF
             modelBuilder.Entity<BaseItem>().HasMany(e => e.consumableStats).WithOne().HasForeignKey(e => e.consumableId).IsRequired();
 
             modelBuilder.Entity<ConsumableStat>().HasOne<BaseItem>().WithMany(e => e.consumableStats).HasForeignKey(e => e.consumableId).IsRequired();
+            modelBuilder.Entity<ConsumableStat>().HasIndex(e => new { e.consumableId, e.stat, e.isPermanent }).IsUnique();
         }
     }
 }
