@@ -1,6 +1,7 @@
 using archolosDotNet.EF;
 using archolosDotNet.Models;
 using archolosDotNet.Models.Item.Consumable;
+using archolosDotNet.Models.Item.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,23 +19,22 @@ namespace archolosDotNet.Controllers
             return dbContext.Items.Where(i => i.type == ItemType.Food || i.type == ItemType.Potion).Include(i => i.consumableStats).ToList();
         }
 
-        // [HttpGet("{id}")]
-        // public ActionResult<ConsumableStat> Get(int id)
-        // {
-        //     var item = dbContext.Items.Find(id);
+        [HttpGet("{id}")]
+        public ActionResult<BaseItem> Get(int id)
+        {
+            var item = dbContext.Items.Include(i => i.consumableStats).SingleOrDefault(i => i.id == id);
 
-        //     if (item == null)
-        //     {
-        //         return NotFound();
-        //     }
+            if (item == null)
+            {
+                return NotFound();
+            }
 
-        //     return item;
-        // }
+            return item;
+        }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ConsumableDto data)
+        public async Task<IActionResult> Create(Consumable data)
         {
-            Console.WriteLine("CREATE");
             var stats = data.consumableStats;
 
             if (stats == null || stats.Count < 1)
@@ -53,9 +53,10 @@ namespace archolosDotNet.Controllers
                 var item = dbContext.Items.Find(data.id);
 
                 // Add stats to created item
-                foreach (ConsumableStatDto stat in stats)
+                foreach (ConsumableStat stat in stats)
                 {
-                    item?.consumableStats.Add(stat.toStat(data.id));
+                    // item?.consumableStats.Add(stat.toStat(data.id));
+                    item!.consumableStats!.Add(stat.withId(data.id));
                 }
 
                 await dbContext.SaveChangesAsync();
@@ -63,9 +64,9 @@ namespace archolosDotNet.Controllers
 
                 return Ok(data);
             }
-            catch
+            catch (Exception e)
             {
-                return UnprocessableEntity();
+                return UnprocessableEntity(e);
             }
         }
 

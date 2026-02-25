@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using archolosDotNet.Models.Item.Enums;
 using Npgsql.Replication;
 
 namespace archolosDotNet.Models.Item.Consumable;
@@ -27,49 +28,10 @@ public class ConsumableStat
     public int id { get; set; }
 
     public int consumableId { get; set; } // Foreign key
-}
 
-public interface IConsumableDto
-{
-    public ICollection<ConsumableStatDto> consumableStats { get; set; }
-}
-
-public class ConsumableDto : BaseItem, IConsumableDto
-{
-    public new required ICollection<ConsumableStatDto> consumableStats { get; set; }
-}
-
-public class ConsumableStatDto
-{
-    public required ConsumableAttr stat { get; set; }
-    public bool isPermanent { get; set; }
-    public bool isPercentage { get; set; }
-    public int? duration { get; set; }
-    public int? value { get; set; }
-
-    public ConsumableStat toStat(int _id)
+    public ConsumableStat withId(int id)
     {
-        return new ConsumableStat
-        {
-            stat = stat,
-            isPermanent = isPermanent,
-            isPercentage = isPercentage,
-            duration = duration,
-            value = value,
-            consumableId = _id
-        };
+        this.consumableId = id;
+        return this;
     }
-}
-
-public enum ConsumableAttr
-{
-    Health,
-    Mana,
-    Strength,
-    Dexterity,
-    Armor,
-    Spellpower,
-    Exp,
-    Speed,
-    Underwater,
 }

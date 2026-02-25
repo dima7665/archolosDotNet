@@ -6,14 +6,9 @@ namespace archolosDotNet.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemController : ControllerBase
+    public class ItemController(ApplicationDbContext _context) : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext;
-
-        public ItemController(ApplicationDbContext context)
-        {
-            dbContext = context;
-        }
+        private readonly ApplicationDbContext dbContext = _context;
 
         [HttpGet]
         public ActionResult<List<BaseItem>> GetAll()
@@ -39,13 +34,13 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(BaseItemDto _item)
+        public IActionResult Create(BaseItem item)
         {
-            var item = new BaseItem(_item);
+            // var item = new BaseItem(_item);
             dbContext.Items.Add(item);
             dbContext.SaveChanges();
 
-            return CreatedAtAction(nameof(Create), new BaseItemDto(item)
+            return CreatedAtAction(nameof(Create), new
             {
                 id = item.id
             }, item);
