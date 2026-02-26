@@ -1,11 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 using archolosDotNet.Models.Item.Consumable;
 using archolosDotNet.Models.Item.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
 namespace archolosDotNet.Models;
 
 public class _BaseItem
