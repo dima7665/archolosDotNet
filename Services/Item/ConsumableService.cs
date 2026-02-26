@@ -9,7 +9,7 @@ namespace archolosDotNet.Services.Item;
 
 public interface IConsumableService
 {
-    public IQueryable<BaseItem> GetAll();
+    public IQueryable<BaseItem> GetAll(ConsumableFilter? filters);
     public BaseItem? GetById(int id);
     public BaseItem? Create(Consumable data);
     public BaseItem? Delete(int id);
@@ -20,9 +20,28 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
 {
     private readonly ApplicationDbContext dbContext = context;
 
-    public IQueryable<BaseItem> GetAll()
+    public IQueryable<BaseItem> GetAll(ConsumableFilter? filter)
     {
-        return dbContext.Items.Where(i => i.type == ItemType.Food || i.type == ItemType.Potion).Include(i => i.consumableStats!.OrderBy(s => s.stat));
+        var list = dbContext.Items.Where(i => i.type == ItemType.Food || i.type == ItemType.Potion);
+
+        if (filter != null && filter.type.HasValue)
+        {
+            list = list.Where(i => i.type == filter.type);
+        }
+
+       list = list.Include(i => i.consumableStats!.OrderBy(s => s.stat));
+
+        if (filter != null && filter.stat.HasValue)
+        {
+            list = list.Where(i => i.consumableStats!.Any(s => s.stat == filter.stat));
+        }
+
+        if (filter != null && filter.isPermanent.HasValue)
+        {
+            list = list.Where(i => i.consumableStats!.Any(s => s.isPermanent == filter.isPermanent));
+        }
+
+        return list;
     }
 
     public BaseItem? GetById(int id)

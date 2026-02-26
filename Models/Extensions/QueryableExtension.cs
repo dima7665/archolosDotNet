@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.Models.Extensions;
 
-public static class PaginationExtension
+public static class QueryableExtension
 {
     public static async Task<PagedResult<T>> toPagedResultAsync<T>(this IQueryable<T> source, PaginationPayload data)
     {
@@ -24,6 +24,4 @@ public static class PaginationExtension
             pagination = pagination,
         };
     }
-
-
 }

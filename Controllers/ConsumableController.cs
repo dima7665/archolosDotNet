@@ -2,6 +2,7 @@ using archolosDotNet.Models;
 using archolosDotNet.Models.Extensions;
 using archolosDotNet.Models.Item.Consumable;
 using archolosDotNet.Models.Pagination;
+using archolosDotNet.Models.Payload;
 using archolosDotNet.Services.Item;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -15,9 +16,9 @@ namespace archolosDotNet.Controllers
         private readonly IConsumableService consumableService = service;
 
         [HttpGet]
-        public Task<PagedResult<BaseItem>> GetAll([FromBody] PaginationPayload data)
+        public Task<PagedResult<BaseItem>> GetAll([FromBody] ListPayload<ConsumableFilter> data)
         {
-            return consumableService.GetAll().toPagedResultAsync(data);
+            return consumableService.GetAll(data.filter).toPagedResultAsync(data.pagination);
         }
 
         [HttpGet("{id}")]
