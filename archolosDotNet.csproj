@@ -21,6 +21,7 @@
   <ItemGroup>
     <Folder Include="Models/Item/Consumable/" />
     <Folder Include="Models/Item/Weapon/" />
+    <Folder Include="Models/Pagination/" />
   </ItemGroup>
 
 </Project>

@@ -9,20 +9,20 @@ namespace archolosDotNet.Services.Item;
 
 public interface IConsumableService
 {
-    public List<BaseItem> GetAll();
+    public IQueryable<BaseItem> GetAll();
     public BaseItem? GetById(int id);
-    public Task<BaseItem?> Create(Consumable data);
+    public BaseItem? Create(Consumable data);
     public BaseItem? Delete(int id);
-    public Task<BaseItem?> Update(Consumable data);
+    public BaseItem? Update(Consumable data);
 }
 
 public class ConsumableService(ApplicationDbContext context) : IConsumableService
 {
     private readonly ApplicationDbContext dbContext = context;
 
-    public List<BaseItem> GetAll()
+    public IQueryable<BaseItem> GetAll()
     {
-        return dbContext.Items.Where(i => i.type == ItemType.Food || i.type == ItemType.Potion).Include(i => i.consumableStats).ToList();
+        return dbContext.Items.Where(i => i.type == ItemType.Food || i.type == ItemType.Potion).Include(i => i.consumableStats!.OrderBy(s => s.stat));
     }
 
     public BaseItem? GetById(int id)
@@ -30,16 +30,21 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
         return dbContext.Items.Include(i => i.consumableStats).SingleOrDefault(i => i.id == id);
     }
 
-    public async Task<BaseItem?> Create(Consumable data)
+    public BaseItem? Create(Consumable data)
     {
-        using var transaction = await dbContext.Database.BeginTransactionAsync();
-
+        Console.WriteLine("BEFORE transaction");
+        using var transaction = dbContext.Database.BeginTransaction();
 
         // Create item
         dbContext.Items.Add(data);
-        await dbContext.SaveChangesAsync();
+        Console.WriteLine("ITEM : " + data.type);
+        dbContext.SaveChanges();
+
+        Console.WriteLine("After item create");
 
         var item = dbContext.Items.Find(data.id);
+
+        Console.WriteLine("After item find - " + item != null);
 
         // Add stats to created item
         foreach (ConsumableStat stat in data.consumableStats)
@@ -47,8 +52,11 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
             item!.consumableStats!.Add(stat.withId(data.id));
         }
 
-        await dbContext.SaveChangesAsync();
-        await transaction.CommitAsync();
+        Console.WriteLine("AFTER stats");
+
+        dbContext.SaveChanges();
+        transaction.Commit();
+        Console.WriteLine("AFTER transaction");
 
         return item;
     }
@@ -68,7 +76,7 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
         return item;
     }
 
-    public async Task<BaseItem?> Update(Consumable data)
+    public BaseItem? Update(Consumable data)
     {
         using var transaction = dbContext.Database.BeginTransaction();
 
@@ -80,17 +88,10 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
         }
 
         // Update base item
-
-        if (data.name != null && data.name != item.name) item.name = data.name;
-        if (data.price != null && data.price != item.price) item.price = data.price;
-        if (data.type != null && data.type != item.type) item.type = data.type;
-        if (data.description != null && data.description != item.description) item.description = data.description;
-        if (data.additionalInfo != null && data.additionalInfo != item.additionalInfo) item.additionalInfo = data.additionalInfo;
-
+        ItemService.updateItem(item, data);
         dbContext.SaveChanges();
 
         // Start to update consumable stats
-
         var curStats = item.consumableStats!.ToList(); // current stats
         var stats = data.consumableStats.ToList(); // stats from payload
 

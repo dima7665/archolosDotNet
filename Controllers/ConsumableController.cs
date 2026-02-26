@@ -1,6 +1,7 @@
-using archolosDotNet.EF;
 using archolosDotNet.Models;
+using archolosDotNet.Models.Extensions;
 using archolosDotNet.Models.Item.Consumable;
+using archolosDotNet.Models.Pagination;
 using archolosDotNet.Services.Item;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -9,15 +10,14 @@ namespace archolosDotNet.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ConsumableController(ApplicationDbContext context, IConsumableService service) : ControllerBase
+    public class ConsumableController(IConsumableService service) : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext = context;
         private readonly IConsumableService consumableService = service;
 
         [HttpGet]
-        public ActionResult<List<BaseItem>> GetAll()
+        public Task<PagedResult<BaseItem>> GetAll([FromBody] PaginationPayload data)
         {
-            return consumableService.GetAll();
+            return consumableService.GetAll().toPagedResultAsync(data);
         }
 
         [HttpGet("{id}")]
@@ -34,7 +34,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BaseItem>> Create(Consumable data)
+        public ActionResult<BaseItem> Create(Consumable data)
         {
             var stats = data.consumableStats;
 
@@ -77,7 +77,7 @@ namespace archolosDotNet.Controllers
                     return NotFound();
                 }
 
-                return Ok(result);
+                return Ok();
             }
             catch (Exception e)
             {
