@@ -11,16 +11,16 @@ namespace archolosDotNet.EF
         { }
 
         // Tables in db
-        public DbSet<BaseItem> Items { get; set; } = default!;
+        public DbSet<Consumable> Consumables { get; set; } = default!;
         public DbSet<ConsumableStat> ConsumableStats { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<BaseItem>().HasMany(e => e.consumableStats).WithOne().HasForeignKey(e => e.consumableId).IsRequired();
+            modelBuilder.Entity<Consumable>().HasMany(e => e.consumableStats).WithOne().HasForeignKey(e => e.consumableId).IsRequired();
 
-            modelBuilder.Entity<ConsumableStat>().HasOne<BaseItem>().WithMany(e => e.consumableStats).HasForeignKey(e => e.consumableId).IsRequired();
+            modelBuilder.Entity<ConsumableStat>().HasOne<Consumable>().WithMany(e => e.consumableStats).HasForeignKey(e => e.consumableId).IsRequired();
             modelBuilder.Entity<ConsumableStat>().HasIndex(e => new { e.consumableId, e.stat, e.isPermanent }).IsUnique();
         }
     }

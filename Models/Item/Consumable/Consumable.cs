@@ -1,8 +1,5 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using archolosDotNet.Models.Item.Enums;
-using Npgsql.Replication;
 
 namespace archolosDotNet.Models.Item.Consumable;
 
@@ -13,7 +10,7 @@ public interface IConsumable
 
 public class Consumable : BaseItem, IConsumable
 {
-    public new required ICollection<ConsumableStat> consumableStats { get; set; }
+    public required ICollection<ConsumableStat> consumableStats { get; set; }
 }
 
 public class ConsumableStat

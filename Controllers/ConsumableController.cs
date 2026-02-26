@@ -1,4 +1,3 @@
-using archolosDotNet.Models;
 using archolosDotNet.Models.Extensions;
 using archolosDotNet.Models.Item.Consumable;
 using archolosDotNet.Models.Pagination;
@@ -16,13 +15,13 @@ namespace archolosDotNet.Controllers
         private readonly IConsumableService consumableService = service;
 
         [HttpGet]
-        public Task<PagedResult<BaseItem>> GetAll([FromBody] ListPayload<ConsumableFilter> data)
+        public Task<PagedResult<Consumable>> GetAll([FromBody] ListPayload<ConsumableFilter> data)
         {
             return consumableService.GetAll(data.filter).toPagedResultAsync(data.pagination);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<BaseItem> Get(int id)
+        public ActionResult<Consumable> Get(int id)
         {
             var item = consumableService.GetById(id);
 
@@ -35,7 +34,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        public ActionResult<BaseItem> Create(Consumable data)
+        public ActionResult<Consumable> Create(Consumable data)
         {
             var stats = data.consumableStats;
 
@@ -55,7 +54,7 @@ namespace archolosDotNet.Controllers
                     return Conflict("Duplicate stats error: check combinations of name and if it is permanent");
                 }
 
-                return UnprocessableEntity("Invalid data");
+                return UnprocessableEntity(new { message = "Invalid data", originalError = e });
             }
         }
 

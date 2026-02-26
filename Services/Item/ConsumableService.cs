@@ -1,35 +1,32 @@
-using System.Security.Cryptography;
 using archolosDotNet.EF;
-using archolosDotNet.Models;
 using archolosDotNet.Models.Item.Consumable;
-using archolosDotNet.Models.Item.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.Services.Item;
 
 public interface IConsumableService
 {
-    public IQueryable<BaseItem> GetAll(ConsumableFilter? filters);
-    public BaseItem? GetById(int id);
-    public BaseItem? Create(Consumable data);
-    public BaseItem? Delete(int id);
-    public BaseItem? Update(Consumable data);
+    public IQueryable<Consumable> GetAll(ConsumableFilter? filters);
+    public Consumable? GetById(int id);
+    public Consumable? Create(Consumable data);
+    public Consumable? Delete(int id);
+    public Consumable? Update(Consumable data);
 }
 
 public class ConsumableService(ApplicationDbContext context) : IConsumableService
 {
     private readonly ApplicationDbContext dbContext = context;
 
-    public IQueryable<BaseItem> GetAll(ConsumableFilter? filter)
+    public IQueryable<Consumable> GetAll(ConsumableFilter? filter)
     {
-        var list = dbContext.Items.Where(i => i.type == ItemType.Food || i.type == ItemType.Potion);
+        var list = dbContext.Consumables.AsQueryable();
 
         if (filter != null && filter.type.HasValue)
         {
             list = list.Where(i => i.type == filter.type);
         }
 
-       list = list.Include(i => i.consumableStats!.OrderBy(s => s.stat));
+        list = list.Include(i => i.consumableStats!.OrderBy(s => s.stat));
 
         if (filter != null && filter.stat.HasValue)
         {
@@ -44,58 +41,35 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
         return list;
     }
 
-    public BaseItem? GetById(int id)
+    public Consumable? GetById(int id)
     {
-        return dbContext.Items.Include(i => i.consumableStats).SingleOrDefault(i => i.id == id);
+        return dbContext.Consumables.Include(i => i.consumableStats).SingleOrDefault(i => i.id == id);
     }
 
-    public BaseItem? Create(Consumable data)
+    public Consumable? Create(Consumable data)
     {
-        Console.WriteLine("BEFORE transaction");
-        using var transaction = dbContext.Database.BeginTransaction();
-
-        // Create item
-        dbContext.Items.Add(data);
-        Console.WriteLine("ITEM : " + data.type);
+        dbContext.Consumables.Add(data);
         dbContext.SaveChanges();
 
-        Console.WriteLine("After item create");
-
-        var item = dbContext.Items.Find(data.id);
-
-        Console.WriteLine("After item find - " + item != null);
-
-        // Add stats to created item
-        foreach (ConsumableStat stat in data.consumableStats)
-        {
-            item!.consumableStats!.Add(stat.withId(data.id));
-        }
-
-        Console.WriteLine("AFTER stats");
-
-        dbContext.SaveChanges();
-        transaction.Commit();
-        Console.WriteLine("AFTER transaction");
-
-        return item;
+        return data;
     }
 
-    public BaseItem? Delete(int id)
+    public Consumable? Delete(int id)
     {
-        var item = dbContext.Items.Find(id);
+        var item = dbContext.Consumables.Find(id);
 
         if (item == null)
         {
             return null;
         }
 
-        dbContext.Items.Remove(item);
+        dbContext.Consumables.Remove(item);
         dbContext.SaveChanges();
 
         return item;
     }
 
-    public BaseItem? Update(Consumable data)
+    public Consumable? Update(Consumable data)
     {
         using var transaction = dbContext.Database.BeginTransaction();
 
