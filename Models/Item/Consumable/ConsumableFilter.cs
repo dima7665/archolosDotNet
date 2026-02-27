@@ -5,7 +5,7 @@ namespace archolosDotNet.Models.Item.Consumable;
 
 public class ConsumableFilter
 {
-    public ItemType? type { get; set; }
+    public ConsumableType? type { get; set; }
 
     public ConsumableAttr? stat { get; set; }
 

@@ -10,6 +10,7 @@ public interface IConsumable
 
 public class Consumable : BaseItem, IConsumable
 {
+    public required ConsumableType type { get; set; }
     public required ICollection<ConsumableStat> consumableStats { get; set; }
 }
 
@@ -23,7 +24,7 @@ public class ConsumableStat
 
     [Key]
     public int id { get; set; }
- 
+
     public int consumableId { get; set; } // Foreign key
 
     public ConsumableStat withId(int id)

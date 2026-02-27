@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi(); // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 builder.Services.AddScoped<IConsumableService, ConsumableService>();
+builder.Services.AddScoped<IWeaponService, WeaponService>();
 
 var connectionString = builder.Configuration.GetConnectionString("Database");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

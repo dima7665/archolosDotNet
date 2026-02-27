@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models/Item/Weapon/" />
+    <Folder Include="Models/Item/Armor/" />
     <Folder Include="Models/Pagination/" />
     <Folder Include="Models/Payload/" />
   </ItemGroup>

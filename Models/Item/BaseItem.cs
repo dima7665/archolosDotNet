@@ -9,8 +9,6 @@ public class BaseItem
 
     public required string name { get; set; }
 
-    public required ItemType type { get; set; } = ItemType.Misc;
-
     public int price { get; set; }
 
     public string? description { get; set; }

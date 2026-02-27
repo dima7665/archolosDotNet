@@ -1,5 +1,6 @@
 using archolosDotNet.Models;
 using archolosDotNet.Models.Item.Consumable;
+using archolosDotNet.Models.Item.Weapon;
 using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.EF
@@ -13,6 +14,8 @@ namespace archolosDotNet.EF
         // Tables in db
         public DbSet<Consumable> Consumables { get; set; } = default!;
         public DbSet<ConsumableStat> ConsumableStats { get; set; } = default!;
+
+        public DbSet<Weapon> Weapons { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
