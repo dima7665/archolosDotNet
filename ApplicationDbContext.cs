@@ -1,5 +1,6 @@
 using archolosDotNet.Models.Item.Armor;
 using archolosDotNet.Models.Item.Consumable;
+using archolosDotNet.Models.Item.Recipe;
 using archolosDotNet.Models.Item.Weapon;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,9 @@ namespace archolosDotNet.EF
         public DbSet<Armor> Armors { get; set; } = default!;
         public DbSet<ArmorStatObj> ArmorStats { get; set; } = default!;
 
+        public DbSet<Recipe> Recipes { get; set; } = default!;
+        public DbSet<RecipeIngredient> RecipeIngredients { get; set; } = default!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,6 +35,8 @@ namespace archolosDotNet.EF
             modelBuilder.Entity<Armor>().HasMany(e => e.stats).WithOne().HasForeignKey(e => e.armorId).IsRequired();
             modelBuilder.Entity<ArmorStatObj>().HasOne<Armor>().WithMany(e => e.stats).HasForeignKey(e => e.armorId).IsRequired();
             
+            modelBuilder.Entity<Recipe>().HasMany(e => e.ingredients).WithOne().HasForeignKey(e => e.recipeId).IsRequired();
+            modelBuilder.Entity<RecipeIngredient>().HasOne<Recipe>().WithMany(e => e.ingredients).HasForeignKey(e => e.recipeId).IsRequired();
         }
     }
 }
