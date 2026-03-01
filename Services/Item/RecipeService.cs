@@ -1,24 +1,25 @@
+using System.Threading.Tasks;
 using archolosDotNet.EF;
-using archolosDotNet.Models.Item.Enums;
-using archolosDotNet.Models.Item.Recipe;
+using archolosDotNet.Models.Item.RecipeNS;
 using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.Services.Item;
 
 public interface IRecipeService
 {
-    public IQueryable<Recipe> GetAll(RecipeFilter? filters);
+    public IQueryable<RecipeShort> GetAll(RecipeFilter? filters);
     public Recipe? GetById(int id);
     public Recipe? Create(Recipe data);
     public Recipe? Delete(int id);
     public Recipe? Update(Recipe data);
 }
 
-public class RecipeService(ApplicationDbContext context) : IRecipeService
+public class RecipeService(ApplicationDbContext context, IConsumableService _consumableService) : IRecipeService
 {
     private readonly ApplicationDbContext dbContext = context;
+    private readonly IConsumableService consumableService = _consumableService;
 
-    public IQueryable<Recipe> GetAll(RecipeFilter? filter)
+    public IQueryable<RecipeShort> GetAll(RecipeFilter? filter)
     {
         var list = dbContext.Recipes.AsQueryable();
 
@@ -27,50 +28,60 @@ public class RecipeService(ApplicationDbContext context) : IRecipeService
             list = list.Where(i => i.requirement == filter.skill);
         }
 
-        // -------------------------
-        // -------------------------
-        // TODO: створити окремі FK ключі від інгредієнта до кожної з таблиць
-        // -------------------------
-        // -------------------------
+        var shorts = new List<RecipeShort>();
 
-        // list = list.Include(i => i.ingredients!).SelectMany;
-        // list = list.Include(i => i.ingredients!).OrderBy(s => s.id);
+        foreach (Recipe recipe in list.ToList())
+        {
+            var rawIngredients = dbContext.RecipeIngredients.Where(ri => ri.recipeId == recipe.id).ToList();
 
+            var ingredients = new List<RecipeIngredientShort>();
 
-        // .LeftJoin(dbContext.Consumables, i => i.itemId, c => c.id, (ingredient, consumable) => new
-        // {
-        //     ingredient.id,
-        //     ingredient.itemType,
-        //     name = consumable.name,
-        //     // cName = consumable.name,
-        //     ingredient.itemId,
-        //     ingredient.quantity
-        // })
-        // .LeftJoin(dbContext.Weapons, i => i.itemId, w => w.id, (ingredient, weapon) => new
-        // {
-        //     ingredient.id,
-        //     ingredient.itemType,
-        //     wName = weapon.name,
-        //     ingredient.cName,
-        //     ingredient.itemId,
-        //     ingredient.quantity
-        // })
-        // .Select(cr => new
-        // {
-        //     cr.id,
-        //     name = cr.itemType == RecipeItemType.Consumable ? cr.wName : cr.cName,
-        //     cr.itemType,
-        //     cr.itemId,
-        //     cr.quantity
-        // })
+            foreach (RecipeIngredient ingredient in rawIngredients)
+            {
+                ingredients.Add(new RecipeIngredientShort
+                {
+                    id = ingredient.id,
+                    name = getIngredientName(ingredient, dbContext),
+                    quantity = ingredient.quantity,
+                });
+            }
 
+            var shortR = new RecipeShort
+            {
+                id = recipe.id,
+                name = recipe.name,
+                price = recipe.price,
+                description = recipe.description,
+                additionalInfo = recipe.additionalInfo,
+                sources = recipe.sources,
+                requirement = recipe.requirement,
+                ingredients = ingredients,
+            };
 
-        // if (filter != null && filter.stat.HasValue)
-        // {
-        //     list = list.Where(i => i.RecipeStats!.Any(s => s.stat == filter.stat));
-        // }
+            shorts.Add(shortR);
+        }
 
-        return list;
+        return shorts.AsQueryable();
+    }
+
+    private string getIngredientName(RecipeIngredient i, ApplicationDbContext context)
+    {
+        if (i.consumableId.HasValue)
+        {
+            return consumableService.GetById((int)i.consumableId)!.name;
+        }
+
+        if (i.weaponId.HasValue)
+        {
+            return context.Weapons.SingleOrDefault(w => w.id == i.weaponId)!.name;
+        }
+
+        if (i.miscId.HasValue)
+        {
+            return context.Miscs.SingleOrDefault(m => m.id == i.miscId)!.name;
+        }
+
+        return "PLACEHOLDER";
     }
 
     public Recipe? GetById(int id)
@@ -88,7 +99,8 @@ public class RecipeService(ApplicationDbContext context) : IRecipeService
 
     public Recipe? Delete(int id)
     {
-        var item = dbContext.Recipes.Find(id);
+        var item = dbContext.Recipes.SingleOrDefault(i => i.id == id);
+        Console.WriteLine("DELETE " + item?.id);
 
         if (item == null)
         {

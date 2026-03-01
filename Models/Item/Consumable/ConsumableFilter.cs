@@ -1,7 +1,7 @@
 using System;
 using archolosDotNet.Models.Item.Enums;
 
-namespace archolosDotNet.Models.Item.Consumable;
+namespace archolosDotNet.Models.Item.ConsumableNS;
 
 public class ConsumableFilter
 {

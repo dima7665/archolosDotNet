@@ -1,5 +1,5 @@
 using archolosDotNet.EF;
-using archolosDotNet.Models.Item.Weapon;
+using archolosDotNet.Models.Item.WeaponNS;
 
 namespace archolosDotNet.Services.Item;
 
@@ -73,6 +73,7 @@ public class WeaponService(ApplicationDbContext context) : IWeaponService
 
         ItemService.updateItem(item, data);
 
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
         if (data.type != null && data.type != item.type) item.type = data.type;
         if (data.damage != null && data.damage != item.damage) item.damage = data.damage;
         if (data.damageType != null && data.damageType != item.damageType) item.damageType = data.damageType;
@@ -81,6 +82,7 @@ public class WeaponService(ApplicationDbContext context) : IWeaponService
         if (data.skill != null && data.skill != item.skill) item.skill = data.skill;
         if (data.skillRequirement != null && data.skillRequirement != item.skillRequirement) item.skillRequirement = data.skillRequirement;
         if (data.skillBonus != null && data.skillBonus != item.skillBonus) item.skillBonus = data.skillBonus;
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 
         dbContext.SaveChanges();
 

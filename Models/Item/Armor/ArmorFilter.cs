@@ -1,6 +1,6 @@
 using archolosDotNet.Models.Item.Enums;
 
-namespace archolosDotNet.Models.Item.Armor;
+namespace archolosDotNet.Models.Item.ArmorNS;
 
 public class ArmorFilter
 {

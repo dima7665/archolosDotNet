@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using archolosDotNet.Models.Item.Enums;
+using archolosDotNet.Models.Item.RecipeNS;
 
-namespace archolosDotNet.Models.Item.Consumable;
+namespace archolosDotNet.Models.Item.ConsumableNS;
 
 public interface IConsumable
 {
@@ -12,6 +13,9 @@ public class Consumable : BaseItem, IConsumable
 {
     public required ConsumableType type { get; set; }
     public required ICollection<ConsumableStat> consumableStats { get; set; }
+
+    public RecipeIngredient? asIngredient { get; set; } // navigation for Foreign keys
+    public ICollection<Recipe> recipes { get; set; } = []; // navigation for Foreign keys
 }
 
 public class ConsumableStat

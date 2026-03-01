@@ -1,7 +1,6 @@
-using System;
 using archolosDotNet.Models.Item.Enums;
 
-namespace archolosDotNet.Models.Item.Weapon;
+namespace archolosDotNet.Models.Item.WeaponNS;
 
 public class WeaponFilter
 {

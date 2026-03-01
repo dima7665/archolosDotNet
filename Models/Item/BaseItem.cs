@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using archolosDotNet.Models.Item.Enums;
+using archolosDotNet.Models.Item.RecipeNS;
 namespace archolosDotNet.Models;
 
 public class BaseItem

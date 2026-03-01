@@ -1,5 +1,5 @@
 using archolosDotNet.Models.Extensions;
-using archolosDotNet.Models.Item.Recipe;
+using archolosDotNet.Models.Item.RecipeNS;
 using archolosDotNet.Models.Pagination;
 using archolosDotNet.Models.Payload;
 using archolosDotNet.Services.Item;
@@ -14,9 +14,9 @@ namespace archolosDotNet.Controllers
         private readonly IRecipeService recipeService = service;
 
         [HttpGet]
-        public Task<PagedResult<Recipe>> GetAll([FromBody] ListPayload<RecipeFilter> data)
+        public PagedResult<RecipeShort> GetAll([FromBody] ListPayload<RecipeFilter> data)
         {
-            return recipeService.GetAll(data.filter).toPagedResultAsync(data.pagination);
+            return recipeService.GetAll(data.filter).toPagedResult(data.pagination);
         }
 
         [HttpPost]
@@ -30,6 +30,19 @@ namespace archolosDotNet.Controllers
             {
                 return UnprocessableEntity(new { message = "Invalid data", originalError = e });
             }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var result = recipeService.Delete(id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

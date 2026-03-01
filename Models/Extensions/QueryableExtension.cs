@@ -24,4 +24,24 @@ public static class QueryableExtension
             pagination = pagination,
         };
     }
+
+    public static PagedResult<T> toPagedResult<T>(this IQueryable<T> source, PaginationPayload data)
+    {
+        var count = source.Count();
+
+        var items = source.Skip((data.page - 1) * data.perPage).Take(data.perPage).ToList();
+
+        var pagination = new PaginationData
+        {
+            currentPage = data.page,
+            perPage = data.perPage,
+            count = count,
+        };
+
+        return new PagedResult<T>
+        {
+            data = items,
+            pagination = pagination,
+        };
+    }
 }

@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using archolosDotNet.Models.Item.Enums;
+using archolosDotNet.Models.Item.RecipeNS;
 
-namespace archolosDotNet.Models.Item.Armor;
+namespace archolosDotNet.Models.Item.ArmorNS;
 
 public interface IArmor
 {
@@ -11,6 +12,8 @@ public interface IArmor
 public class Armor : BaseItem, IArmor
 {
     public required ICollection<ArmorStatObj> stats { get; set; } = [];
+
+    public RecipeIngredient? asIngredient { get; set; } // navigation for Foreign keys
 }
 
 public class ArmorStatObj

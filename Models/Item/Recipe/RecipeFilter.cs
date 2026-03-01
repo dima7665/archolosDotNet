@@ -1,6 +1,6 @@
 using archolosDotNet.Models.Item.Enums;
 
-namespace archolosDotNet.Models.Item.Recipe;
+namespace archolosDotNet.Models.Item.RecipeNS;
 
 public class RecipeFilter
 {

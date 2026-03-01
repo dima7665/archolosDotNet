@@ -1,5 +1,5 @@
 using archolosDotNet.EF;
-using archolosDotNet.Models.Item.Consumable;
+using archolosDotNet.Models.Item.ConsumableNS;
 using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.Services.Item;
@@ -7,7 +7,7 @@ namespace archolosDotNet.Services.Item;
 public interface IConsumableService
 {
     public IQueryable<Consumable> GetAll(ConsumableFilter? filters);
-    public Consumable? GetById(int id);
+    public Consumable? GetById(int id, bool withStats = true);
     public Consumable? Create(Consumable data);
     public Consumable? Delete(int id);
     public Consumable? Update(Consumable data);
@@ -41,9 +41,16 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
         return list;
     }
 
-    public Consumable? GetById(int id)
+    public Consumable? GetById(int id, bool withStats = true)
     {
-        return dbContext.Consumables.Include(i => i.consumableStats).SingleOrDefault(i => i.id == id);
+        var consumables = dbContext.Consumables.AsQueryable();;
+
+        if (withStats)
+        {
+            consumables = consumables.Include(i => i.consumableStats);
+        }
+
+        return consumables.SingleOrDefault(i => i.id == id);
     }
 
     public Consumable? Create(Consumable data)

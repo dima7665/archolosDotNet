@@ -1,5 +1,5 @@
 using archolosDotNet.Models.Extensions;
-using archolosDotNet.Models.Item.Consumable;
+using archolosDotNet.Models.Item.ConsumableNS;
 using archolosDotNet.Models.Pagination;
 using archolosDotNet.Models.Payload;
 using archolosDotNet.Services.Item;

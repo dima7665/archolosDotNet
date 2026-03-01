@@ -1,6 +1,7 @@
 using archolosDotNet.Models.Item.Enums;
+using archolosDotNet.Models.Item.RecipeNS;
 
-namespace archolosDotNet.Models.Item.Weapon;
+namespace archolosDotNet.Models.Item.WeaponNS;
 
 public interface IWeapon
 {
@@ -24,4 +25,8 @@ public class Weapon : BaseItem, IWeapon
     public WeaponSkill skill { get; set; }
     public int? skillRequirement { get; set; }
     public int? skillBonus { get; set; }
+
+    public RecipeIngredient? asIngredient { get; set; } // navigation for Foreign keys
+
+    public ICollection<Recipe> recipes { get; set; } = []; // navigation for Foreign keys
 }

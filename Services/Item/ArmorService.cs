@@ -1,5 +1,5 @@
 using archolosDotNet.EF;
-using archolosDotNet.Models.Item.Armor;
+using archolosDotNet.Models.Item.ArmorNS;
 using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.Services.Item;

@@ -1,28 +1,30 @@
 using System.ComponentModel.DataAnnotations;
 using archolosDotNet.Models.Item.Enums;
+using archolosDotNet.Models.Item.ConsumableNS;
+using archolosDotNet.Models.Item.WeaponNS;
+using archolosDotNet.Models.Item.Miscellaneous;
+using archolosDotNet.Models.Item.ArmorNS;
 
-namespace archolosDotNet.Models.Item.Recipe;
+namespace archolosDotNet.Models.Item.RecipeNS;
 
-public interface IRecipe
+public class Recipe : BaseItem
 {
-    public ICollection<RecipeIngredient> ingredients { get; set; }
-
-    public int targetId { get; set; }
-    public RecipeItemType targetType { get; set; }
-    public RecipeSkill requirement { get; set; }
-    public int? requirementLevel { get; set; }
-
-}
-
-public class Recipe : BaseItem, IRecipe
-{
-    public required int targetId { get; set; } // id of item
-    public required RecipeItemType targetType { get; set; } // type of item
-
     public required ICollection<RecipeIngredient> ingredients { get; set; } = [];
 
-    public RecipeSkill requirement { get; set; }
+    public required RecipeSkill requirement { get; set; }
     public int? requirementLevel { get; set; }
+
+    public int? consumableId { get; set; } // target
+    public Consumable? consumable { get; set; }
+
+    public int? weaponId { get; set; } // target
+    public Weapon? weapon { get; set; }
+
+    public int? miscId { get; set; } // target
+    public Misc? misc { get; set; }
+
+    public int? armorId { get; set; } // target
+    public Armor? armor { get; set; }
 }
 
 public class RecipeIngredient
@@ -34,13 +36,38 @@ public class RecipeIngredient
 
     public int recipeId { get; set; } // Foreign key
 
-    public int itemId { get; set; }
-    public required RecipeItemType itemType { get; set; } // type of item
+    public int? consumableId { get; set; }
+    public Consumable? consumable { get; set; }
+
+    public int? weaponId { get; set; }
+    public Weapon? weapon { get; set; }
+
+    public int? miscId { get; set; }
+    public Misc? misc { get; set; }
+
+    public int? armorId { get; set; }
+    public Armor? armor { get; set; }
 }
 
-public class RecipeIngredientWithName: RecipeIngredient
+public class RecipeIngredientWithName : RecipeIngredient
 {
     public string? name { get; set; }
 
 }
 
+public class RecipeShort : BaseItem
+{
+    public ICollection<RecipeIngredientShort> ingredients { get; set; } = [];
+
+    public RecipeSkill requirement { get; set; }
+    public int? requirementLevel { get; set; }
+}
+
+public class RecipeIngredientShort
+{
+    public int id { get; set; }
+
+    public required string name { get; set; }
+
+    public int quantity { get; set; }
+}

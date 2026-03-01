@@ -1,5 +1,5 @@
 using archolosDotNet.Models.Extensions;
-using archolosDotNet.Models.Item.WeaponNS;
+using archolosDotNet.Models.Item.Miscellaneous;
 using archolosDotNet.Models.Pagination;
 using archolosDotNet.Models.Payload;
 using archolosDotNet.Services.Item;
@@ -9,20 +9,20 @@ namespace archolosDotNet.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WeaponController(IWeaponService service) : ControllerBase
+    public class MiscController(IMiscService service) : ControllerBase
     {
-        private readonly IWeaponService WeaponService = service;
+        private readonly IMiscService MiscService = service;
 
         [HttpGet]
-        public Task<PagedResult<Weapon>> GetAll([FromBody] ListPayload<WeaponFilter> data)
+        public Task<PagedResult<Misc>> GetAll([FromBody] ListPayload<MiscFilter> data)
         {
-            return WeaponService.GetAll(data.filter).toPagedResultAsync(data.pagination);
+            return MiscService.GetAll(data.filter).toPagedResultAsync(data.pagination);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Weapon> Get(int id)
+        public ActionResult<Misc> Get(int id)
         {
-            var item = WeaponService.GetById(id);
+            var item = MiscService.GetById(id);
 
             if (item == null)
             {
@@ -33,11 +33,11 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Weapon> Create(Weapon data)
+        public ActionResult<Misc> Create(Misc data)
         {
             try
             {
-                return Ok(WeaponService.Create(data));
+                return Ok(MiscService.Create(data));
             }
             catch (Exception e)
             {
@@ -46,11 +46,11 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(Weapon data)
+        public IActionResult Update(Misc data)
         {
             try
             {
-                var result = WeaponService.Update(data);
+                var result = MiscService.Update(data);
 
                 if (result == null)
                 {
@@ -68,7 +68,7 @@ namespace archolosDotNet.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var result = WeaponService.Delete(id);
+            var result = MiscService.Delete(id);
 
             if (result == null)
             {
