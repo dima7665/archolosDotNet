@@ -1,6 +1,7 @@
-using System.Threading.Tasks;
 using archolosDotNet.EF;
+using archolosDotNet.Migrations;
 using archolosDotNet.Models.Item.RecipeNS;
+using archolosDotNet.Models.SelectNS;
 using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.Services.Item;
@@ -8,10 +9,11 @@ namespace archolosDotNet.Services.Item;
 public interface IRecipeService
 {
     public IQueryable<RecipeShort> GetAll(RecipeFilter? filters);
-    public Recipe? GetById(int id);
+    public RecipeShort? GetShortById(int id);
     public Recipe? Create(Recipe data);
     public Recipe? Delete(int id);
     public Recipe? Update(Recipe data);
+    public IngredientsList GetListOfIngredients();
 }
 
 public class RecipeService(ApplicationDbContext context) : IRecipeService
@@ -45,24 +47,63 @@ public class RecipeService(ApplicationDbContext context) : IRecipeService
                     id = i.id,
                     name = getIngredientName(i),
                     quantity = i.quantity,
+                    miscId = i.miscId,
+                    consumableId = i.consumableId,
+                    weaponId = i.weaponId,
                 }).ToList(),
             });
 
         return shorts.AsQueryable();
     }
 
-    private static string getIngredientName(RecipeIngredient i)
-    {
-        return i.consumable != null ? i.consumable.name
-            : i.misc != null ? i.misc.name
-            : i.weapon != null ? i.weapon.name
-            : i.armor != null ? i.armor.name
-            : "-";
-    }
-
     public Recipe? GetById(int id)
     {
         return dbContext.Recipes.Include(i => i.ingredients).SingleOrDefault(i => i.id == id);
+    }
+
+    public RecipeShort? GetShortById(int id)
+    {
+        return dbContext.Recipes.Include(r => r.ingredients).ThenInclude(i => i.armor)
+            .Include(r => r.ingredients).ThenInclude(i => i.consumable)
+            .Include(r => r.ingredients).ThenInclude(i => i.misc)
+            .Include(r => r.ingredients).ThenInclude(i => i.weapon)
+            .Include(r => r.misc)
+            .Include(r => r.consumable)
+            .Include(r => r.weapon)
+            .Select(recipe => new RecipeShortWithTarget
+            {
+                id = recipe.id,
+                name = recipe.name,
+                price = recipe.price,
+                description = recipe.description,
+                additionalInfo = recipe.additionalInfo,
+                sources = recipe.sources,
+                requirement = recipe.requirement,
+                misc = recipe.misc,
+                consumable = recipe.consumable,
+                weapon = recipe.weapon,
+                ingredients = recipe.ingredients.Select(i => new RecipeIngredientShort
+                {
+                    id = i.id,
+                    name = getIngredientName(i),
+                    quantity = i.quantity,
+                    miscId = i.miscId,
+                    consumableId = i.consumableId,
+                    weaponId = i.weaponId,
+                }).ToList(),
+            }).SingleOrDefault(e => e.id == id);
+    }
+
+    public IngredientsList GetListOfIngredients()
+    {
+        var res = new IngredientsList
+        {
+            misc = dbContext.Miscs.Select(e => new SelectOption { id = e.id, name = e.name }).ToList(),
+            consumables = dbContext.Consumables.Select(e => new SelectOption { id = e.id, name = e.name }).ToList(),
+            weapons = dbContext.Weapons.Select(e => new SelectOption { id = e.id, name = e.name }).ToList(),
+        };
+
+        return res;
     }
 
     public Recipe? Create(Recipe data)
@@ -76,7 +117,6 @@ public class RecipeService(ApplicationDbContext context) : IRecipeService
     public Recipe? Delete(int id)
     {
         var item = dbContext.Recipes.SingleOrDefault(i => i.id == id);
-        Console.WriteLine("DELETE " + item?.id);
 
         if (item == null)
         {
@@ -91,56 +131,71 @@ public class RecipeService(ApplicationDbContext context) : IRecipeService
 
     public Recipe? Update(Recipe data)
     {
-        // using var transaction = dbContext.Database.BeginTransaction();
+        using var transaction = dbContext.Database.BeginTransaction();
 
         var item = GetById(data.id);
 
-        // if (item == null)
-        // {
-        //     return null;
-        // }
+        if (item == null)
+        {
+            return null;
+        }
 
         // // Update base item
-        // ItemService.updateItem(item, data);
-        // dbContext.SaveChanges();
+        ItemService.updateItem(item, data);
+        if (data.miscId != item.miscId) item.miscId = data.miscId;
+        if (data.consumableId != item.consumableId) item.consumableId = data.consumableId;
+        if (data.weaponId != item.weaponId) item.weaponId = data.weaponId;
+        if (data.armorId != item.armorId) item.armorId = data.armorId;
+
+        dbContext.SaveChanges();
 
         // // Start to update Recipe stats
-        // var curStats = item.RecipeStats!.ToList(); // current stats
-        // var stats = data.RecipeStats.ToList(); // stats from payload
+        var currentIngredients = item.ingredients!.ToList(); // current ingredients
+        var payloadIngredients = data.ingredients.ToList(); // ingredients from payload
 
         // // Remove stats
-        // foreach (var cs in curStats)
-        // {
-        //     var curStatUpdateData = stats.Find(s => cs.stat == s.stat && cs.isPermanent == s.isPermanent);
+        foreach (var ci in currentIngredients)
+        {
+            var curStatUpdateData = payloadIngredients.Find(pi => ci.id == pi.id);
 
-        //     if (curStatUpdateData == null)
-        //     {
-        //         item.RecipeStats!.Remove(cs);
-        //     }
-        // }
+            if (curStatUpdateData == null)
+            {
+                item.ingredients!.Remove(ci);
+            }
+        }
 
         // // Add or update stats
-        // foreach (var s in stats)
-        // {
-        //     var existedStat = curStats.Find(cs => cs.stat == s.stat && cs.isPermanent == s.isPermanent);
+        foreach (var pi in payloadIngredients)
+        {
+            var existedIngredient = currentIngredients.Find(ci => ci.id == pi.id);
 
-        //     if (existedStat == null)
-        //     {
-        //         item.RecipeStats!.Add(s);
-        //     }
-        //     else
-        //     {
-        //         if (existedStat.value != null && existedStat.value != s.value) existedStat.value = s.value;
-        //         if (existedStat.duration != null && existedStat.duration != s.duration) existedStat.duration = s.duration;
-        //         if (existedStat.isPercentage != s.isPercentage) existedStat.isPercentage = s.isPercentage;
+            if (existedIngredient == null)
+            {
+                item.ingredients!.Add(pi);
+            }
+            else
+            {
+                if (existedIngredient.quantity != pi.quantity) existedIngredient.quantity = pi.quantity;
+                if (existedIngredient.miscId != pi.miscId) existedIngredient.miscId = pi.miscId;
+                if (existedIngredient.consumableId != pi.consumableId) existedIngredient.consumableId = pi.consumableId;
+                if (existedIngredient.weaponId != pi.weaponId) existedIngredient.weaponId = pi.weaponId;
+                if (existedIngredient.armorId != pi.armorId) existedIngredient.armorId = pi.armorId;
+            }
+        }
 
-        //     }
-        // }
-
-        // dbContext.SaveChanges();
-        // transaction.Commit();
+        dbContext.SaveChanges();
+        transaction.Commit();
 
         return item;
+    }
+
+    private static string getIngredientName(RecipeIngredient i)
+    {
+        return i.consumable != null ? i.consumable.name
+            : i.misc != null ? i.misc.name
+            : i.weapon != null ? i.weapon.name
+            : i.armor != null ? i.armor.name
+            : "-";
     }
 }
 

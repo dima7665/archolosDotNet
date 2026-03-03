@@ -4,6 +4,7 @@ using archolosDotNet.Models.Item.ConsumableNS;
 using archolosDotNet.Models.Item.WeaponNS;
 using archolosDotNet.Models.Item.Miscellaneous;
 using archolosDotNet.Models.Item.ArmorNS;
+using archolosDotNet.Models.SelectNS;
 
 namespace archolosDotNet.Models.Item.RecipeNS;
 
@@ -63,6 +64,17 @@ public class RecipeShort : BaseItem
     public int? requirementLevel { get; set; }
 }
 
+public class RecipeShortWithTarget : RecipeShort
+{
+    public Consumable? consumable { get; set; }
+
+    public Weapon? weapon { get; set; }
+
+    public Misc? misc { get; set; }
+
+    public Armor? armor { get; set; }
+}
+
 public class RecipeIngredientShort
 {
     public int id { get; set; }
@@ -70,4 +82,15 @@ public class RecipeIngredientShort
     public required string name { get; set; }
 
     public int quantity { get; set; }
+
+    public int? consumableId { get; set; }
+    public int? weaponId { get; set; }
+    public int? miscId { get; set; }
+}
+
+public class IngredientsList
+{
+    public List<SelectOption> misc { get; set; } = [];
+    public List<SelectOption> consumables { get; set; } = [];
+    public List<SelectOption> weapons { get; set; } = [];
 }

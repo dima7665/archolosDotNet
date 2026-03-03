@@ -55,14 +55,14 @@ namespace archolosDotNet.EF
             // Recipe ingredient
             modelBuilder.Entity<RecipeIngredient>().HasOne<Recipe>().WithMany(e => e.ingredients).HasForeignKey(e => e.recipeId).IsRequired();
 
-            modelBuilder.Entity<RecipeIngredient>().HasOne(e => e.misc).WithOne(e => e.asIngredient).HasForeignKey<Misc>(e => e.id).IsRequired(true);
-            modelBuilder.Entity<Misc>().HasOne(e => e.asIngredient).WithOne(e => e.misc).HasForeignKey<RecipeIngredient>(e => e.miscId).IsRequired(false);
+            modelBuilder.Entity<RecipeIngredient>().HasOne(e => e.misc).WithMany(e => e.asIngredient).HasForeignKey(e => e.id).IsRequired(true);
+            modelBuilder.Entity<Misc>().HasMany(e => e.asIngredient).WithOne(e => e.misc).HasForeignKey(e => e.miscId).IsRequired(false);
 
-            modelBuilder.Entity<RecipeIngredient>().HasOne(e => e.consumable).WithOne(e => e.asIngredient).HasForeignKey<Consumable>(e => e.id).IsRequired(true);
-            modelBuilder.Entity<Consumable>().HasOne(e => e.asIngredient).WithOne(e => e.consumable).HasForeignKey<RecipeIngredient>(e => e.consumableId).IsRequired(false);
+            modelBuilder.Entity<RecipeIngredient>().HasOne(e => e.consumable).WithMany(e => e.asIngredient).HasForeignKey(e => e.id).IsRequired(true);
+            modelBuilder.Entity<Consumable>().HasMany(e => e.asIngredient).WithOne(e => e.consumable).HasForeignKey(e => e.consumableId).IsRequired(false);
 
-            modelBuilder.Entity<RecipeIngredient>().HasOne(e => e.weapon).WithOne(e => e.asIngredient).HasForeignKey<Weapon>(e => e.id).IsRequired(true);
-            modelBuilder.Entity<Weapon>().HasOne(e => e.asIngredient).WithOne(e => e.weapon).HasForeignKey<RecipeIngredient>(e => e.weaponId).IsRequired(false);
+            modelBuilder.Entity<RecipeIngredient>().HasOne(e => e.weapon).WithMany(e => e.asIngredient).HasForeignKey(e => e.id).IsRequired(true);
+            modelBuilder.Entity<Weapon>().HasMany(e => e.asIngredient).WithOne(e => e.weapon).HasForeignKey(e => e.weaponId).IsRequired(false);
         }
     }
 }

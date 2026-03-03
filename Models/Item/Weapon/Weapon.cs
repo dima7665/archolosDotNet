@@ -26,7 +26,7 @@ public class Weapon : BaseItem, IWeapon
     public int? skillRequirement { get; set; }
     public int? skillBonus { get; set; }
 
-    public RecipeIngredient? asIngredient { get; set; } // navigation for Foreign keys
+    public ICollection<RecipeIngredient> asIngredient { get; set; } = []; // navigation for Foreign keys
 
     public ICollection<Recipe> recipes { get; set; } = []; // navigation for Foreign keys
 }

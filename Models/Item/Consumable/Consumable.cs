@@ -14,7 +14,7 @@ public class Consumable : BaseItem, IConsumable
     public required ConsumableType type { get; set; }
     public required ICollection<ConsumableStat> consumableStats { get; set; }
 
-    public RecipeIngredient? asIngredient { get; set; } // navigation for Foreign keys
+    public ICollection<RecipeIngredient> asIngredient { get; set; } = []; // navigation for Foreign keys
     public ICollection<Recipe> recipes { get; set; } = []; // navigation for Foreign keys
 }
 
