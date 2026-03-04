@@ -3,6 +3,7 @@ using archolosDotNet.Models.Item.ConsumableNS;
 using archolosDotNet.Models.Item.Miscellaneous;
 using archolosDotNet.Models.Item.RecipeNS;
 using archolosDotNet.Models.Item.WeaponNS;
+using archolosDotNet.Models.UserNS;
 using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.EF
@@ -27,9 +28,14 @@ namespace archolosDotNet.EF
         public DbSet<Recipe> Recipes { get; set; } = default!;
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; } = default!;
 
+        public DbSet<User> Users { get; set; } = default!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // User
+            modelBuilder.Entity<User>().HasIndex(e => e.email).IsUnique();
 
             // Consumable
             modelBuilder.Entity<Consumable>().HasMany(e => e.consumableStats).WithOne().HasForeignKey(e => e.consumableId).IsRequired();
