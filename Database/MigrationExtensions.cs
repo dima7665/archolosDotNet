@@ -1,4 +1,4 @@
-using archolosDotNet.EF;
+using archolosDotNet.Database;
 using Microsoft.EntityFrameworkCore;
 
 public static class MigrationExtensions

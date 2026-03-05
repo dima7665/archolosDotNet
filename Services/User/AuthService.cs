@@ -1,83 +1,20 @@
-using archolosDotNet.EF;
-using archolosDotNet.Models.User;
+using archolosDotNet.Database;
+using archolosDotNet.Migrations;
 using archolosDotNet.Models.UserNS;
+using Microsoft.EntityFrameworkCore;
 
 namespace archolosDotNet.Services.UserNS;
 
 public interface IAuthService
 {
-    public IQueryable<SimpleUser> GetAll();
-    public UserDto CreateUser(UserDto data);
-    public bool Delete(int id);
-
-    public SimpleUser? GetUserByEmail(string email);
-    public bool IsAuthenticated(UserDto? user);
+    public bool IsAuthenticated(LoginRequest user);
+    public LoginResponse? Login(LoginRequest data);
+    public Tokens? RefreshTokens(string token);
 }
 
-public class AuthService(ApplicationDbContext context) : IAuthService
+public class AuthService(ApplicationDbContext dbContext, JwtService jwtService) : IAuthService
 {
-    private readonly ApplicationDbContext dbContext = context;
-
-    public IQueryable<SimpleUser> GetAll()
-    {
-        return dbContext.Users.Select(u => new SimpleUser
-        {
-            id = u.id,
-            email = u.email,
-            role = u.role,
-            firstName = u.firstName,
-            lastName = u.lastName,
-        });
-    }
-
-    public UserDto CreateUser(UserDto data)
-    {
-        var hasher = new PasswordHasher();
-
-        var newUser = new User
-        {
-            email = data.email,
-            hash = hasher.HashPassword(data.password),
-            firstName = data.firstName,
-            lastName = data.lastName,
-            role = (UserRole)(data.role.HasValue ? data.role : UserRole.Other),
-        };
-
-        dbContext.Users.Add(newUser);
-        dbContext.SaveChanges();
-        data.id = newUser.id;
-
-        return data;
-    }
-
-    public bool Delete(int id)
-    {
-        var item = dbContext.Users.Find(id);
-
-        if (item == null)
-        {
-            return false;
-        }
-
-        dbContext.Users.Remove(item);
-        dbContext.SaveChanges();
-
-        return true;
-    }
-
-    public SimpleUser? GetUserByEmail(string email)
-    {
-        return dbContext.Users.Select(u => new SimpleUser
-        {
-            id = u.id,
-            email = u.email,
-            role = u.role,
-            firstName = u.firstName,
-            lastName = u.lastName,
-        }).SingleOrDefault(u => u.email == email);
-    }
-
-    public bool IsAuthenticated(UserDto? data)
+    public bool IsAuthenticated(LoginRequest data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
@@ -91,5 +28,70 @@ public class AuthService(ApplicationDbContext context) : IAuthService
         }
 
         return hasher.VerifyPassword(data.password, user.hash);
+    }
+
+    public LoginResponse? Login(LoginRequest data)
+    {
+        var user = dbContext.Users.SingleOrDefault(u => u.email == data.email);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        var hasher = new PasswordHasher();
+
+        if (!hasher.VerifyPassword(data.password, user.hash))
+        {
+            return null;
+        }
+
+        var refreshToken = jwtService.GenerateRefreshToken();
+
+        dbContext.RefreshTokens.Add(new RefreshToken
+        {
+            token = refreshToken,
+            expiresOn = DateTime.UtcNow.AddDays(5),
+            userId = user.id,
+        });
+        dbContext.SaveChanges();
+
+        return new LoginResponse
+        {
+            user = new SimpleUser(user),
+            tokens = new Tokens
+            {
+                accessToken = jwtService.CreateAccessToken(user),
+                refreshToken = refreshToken,
+            }
+        };
+    }
+
+    public Tokens? RefreshTokens(string token)
+    {
+        RefreshToken? refreshToken = dbContext.RefreshTokens.Include(r => r.user).SingleOrDefault(r => r.token == token);
+
+        if (refreshToken is null || refreshToken.expiresOn < DateTime.UtcNow)
+        {
+            return null;
+        }
+
+        if (refreshToken.expiresOn < DateTime.UtcNow.AddDays(-1))
+        {
+            refreshToken.token = jwtService.GenerateRefreshToken();
+            refreshToken.expiresOn = DateTime.UtcNow.AddDays(5);
+            dbContext.SaveChanges();
+        }
+
+        return new Tokens
+        {
+            accessToken = jwtService.CreateAccessToken(refreshToken.user),
+            refreshToken = refreshToken.token,
+        };
+    }
+
+    public bool Logout()
+    {
+        return true;
     }
 }

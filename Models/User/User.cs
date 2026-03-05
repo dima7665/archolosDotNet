@@ -1,5 +1,5 @@
-using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace archolosDotNet.Models.UserNS;
 
@@ -26,6 +26,36 @@ public class SimpleUser
     public string? lastName { get; set; }
 
     public UserRole role { get; set; }
+
+    public SimpleUser() { }
+    
+    [SetsRequiredMembers]
+    public SimpleUser(User data)
+    {
+        id = data.id;
+        email = data.email;
+        firstName = data.firstName;
+        lastName = data.lastName;
+        role = data.role;
+    }
+}
+
+public class LoginRequest
+{
+    public required string email { get; set; }
+    public required string password { get; set; }
+}
+
+public class LoginResponse
+{
+    public required SimpleUser user { get; init; }
+    public required Tokens tokens { get; set; }
+}
+
+public class Tokens
+{
+    public string accessToken { get; set; }
+    public string refreshToken { get; set; }
 }
 
 public enum UserRole

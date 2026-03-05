@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Builders/" />
+    <Folder Include="Database/Configurations/" />
     <Folder Include="Models/Item/Armor/" />
     <Folder Include="Models/Item/Miscellaneous/" />
     <Folder Include="Models/Item/Recipe/" />
@@ -30,7 +31,6 @@
     <Folder Include="Models/Payload/" />
     <Folder Include="Models/Select/" />
     <Folder Include="Models/User/" />
-    <Folder Include="Services/User/" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ using archolosDotNet.Models.Item.WeaponNS;
 using archolosDotNet.Models.UserNS;
 using Microsoft.EntityFrameworkCore;
 
-namespace archolosDotNet.EF
+namespace archolosDotNet.Database
 {
     public class ApplicationDbContext : DbContext
     {
@@ -29,9 +29,12 @@ namespace archolosDotNet.EF
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; } = default!;
 
         public DbSet<User> Users { get; set; } = default!;
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
             base.OnModelCreating(modelBuilder);
 
             // User

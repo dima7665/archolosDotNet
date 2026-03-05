@@ -1,9 +1,8 @@
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using Konscious.Security.Cryptography;
 
-namespace archolosDotNet.Models.User;
+namespace archolosDotNet.Models.UserNS;
 
 public class PasswordHasher
 {
