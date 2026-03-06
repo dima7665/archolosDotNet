@@ -24,7 +24,6 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpDelete("logout")]
-        [Authorize]
         public ActionResult Logout([FromQuery] string token)
         {
             authService.Logout(token);

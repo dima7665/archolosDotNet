@@ -4,12 +4,6 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archolosDotNet", "archolosDotNet.csproj", "{35B0BFE5-1EC1-393F-E772-E9DD763C877B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EF", "EF", "{3C7C16B0-E6BC-1716-E02B-83F09AF7C6CE}"
-	ProjectSection(SolutionItems) = preProject
-		ApplicationDbContext.cs = ApplicationDbContext.cs
-		MigrationExtensions.cs = MigrationExtensions.cs
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

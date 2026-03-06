@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("archolosDotNet")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fcf08f76c1bc16d595f261798dc204a5dae93c64")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8d91e8009a89e7b408a7660e23c31b5f6d408cc7")]
 [assembly: System.Reflection.AssemblyProductAttribute("archolosDotNet")]
 [assembly: System.Reflection.AssemblyTitleAttribute("archolosDotNet")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
