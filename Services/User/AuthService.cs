@@ -1,5 +1,5 @@
+using System.Security.Claims;
 using archolosDotNet.Database;
-using archolosDotNet.Migrations;
 using archolosDotNet.Models.UserNS;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,29 +7,13 @@ namespace archolosDotNet.Services.UserNS;
 
 public interface IAuthService
 {
-    public bool IsAuthenticated(LoginRequest user);
     public LoginResponse? Login(LoginRequest data);
+    public void Logout(string token);
     public Tokens? RefreshTokens(string token);
 }
 
-public class AuthService(ApplicationDbContext dbContext, JwtService jwtService) : IAuthService
+public class AuthService(ApplicationDbContext dbContext, JwtService jwtService, IHttpContextAccessor httpContextAccessor) : IAuthService
 {
-    public bool IsAuthenticated(LoginRequest data)
-    {
-        ArgumentNullException.ThrowIfNull(data);
-
-        var hasher = new PasswordHasher();
-
-        var user = dbContext.Users.SingleOrDefault(u => u.email == data.email);
-
-        if (user == null)
-        {
-            return false;
-        }
-
-        return hasher.VerifyPassword(data.password, user.hash);
-    }
-
     public LoginResponse? Login(LoginRequest data)
     {
         var user = dbContext.Users.SingleOrDefault(u => u.email == data.email);
@@ -69,6 +53,7 @@ public class AuthService(ApplicationDbContext dbContext, JwtService jwtService) 
 
     public Tokens? RefreshTokens(string token)
     {
+
         RefreshToken? refreshToken = dbContext.RefreshTokens.Include(r => r.user).SingleOrDefault(r => r.token == token);
 
         if (refreshToken is null || refreshToken.expiresOn < DateTime.UtcNow)
@@ -76,7 +61,16 @@ public class AuthService(ApplicationDbContext dbContext, JwtService jwtService) 
             return null;
         }
 
-        if (refreshToken.expiresOn < DateTime.UtcNow.AddDays(-1))
+        if (refreshToken.userId != GetCurrentUserId())
+        {
+            // щоб витягти ід юзера має передаватися AccessToken, а цей виклик буде робитися тільки якщо він expired, тобто без нього
+
+            // dbContext.RefreshTokens.Where(r => r.userId == refreshToken.userId).ExecuteDelete();
+            // dbContext.SaveChanges();
+            // return null;
+        }
+
+        if (refreshToken.expiresOn < DateTime.UtcNow.AddDays(-5).AddHours(3))
         {
             refreshToken.token = jwtService.GenerateRefreshToken();
             refreshToken.expiresOn = DateTime.UtcNow.AddDays(5);
@@ -90,8 +84,21 @@ public class AuthService(ApplicationDbContext dbContext, JwtService jwtService) 
         };
     }
 
-    public bool Logout()
+    public void Logout(string token)
     {
-        return true;
+        var _token = dbContext.RefreshTokens.SingleOrDefault(r => r.token == token);
+
+        if (_token != null)
+        {
+            dbContext.RefreshTokens.Remove(_token);
+            dbContext.SaveChanges();
+        }
+    }
+
+    private int? GetCurrentUserId()
+    {
+        var id = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        return id != null ? int.Parse(id) : null;
     }
 }

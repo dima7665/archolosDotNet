@@ -14,12 +14,14 @@ namespace archolosDotNet.Controllers
     public class UserController(IUserService userService) : ControllerBase
     {
         [HttpGet]
+        [Authorize(Roles = UserRoles.Super)]
         public PagedResult<SimpleUser> GetAll([FromBody] ListPayload<UserFilter> data)
         {
             return userService.GetAll().toPagedResult(data.pagination);
         }
 
         [HttpPost("create")]
+        [Authorize(Roles = UserRoles.Super)]
         public ActionResult<UserDto> createUser(UserDto user)
         {
             try
@@ -38,18 +40,12 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRoles.Super)]
         public IActionResult Delete(int id)
         {
             var result = userService.Delete(id);
 
             return result ? NoContent() : NotFound();
-        }
-
-        [HttpGet("token")]
-        [Authorize]
-        public PagedResult<SimpleUser> GetAll2([FromBody] ListPayload<UserFilter> data)
-        {
-            return userService.GetAll().toPagedResult(data.pagination);
         }
     }
 }

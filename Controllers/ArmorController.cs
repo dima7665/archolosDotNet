@@ -2,7 +2,9 @@ using archolosDotNet.Models.Extensions;
 using archolosDotNet.Models.Item.ArmorNS;
 using archolosDotNet.Models.Pagination;
 using archolosDotNet.Models.Payload;
+using archolosDotNet.Models.UserNS;
 using archolosDotNet.Services.Item;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -34,6 +36,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public ActionResult<Armor> Create(Armor data)
         {
             var stats = data.stats;
@@ -59,6 +62,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = UserRoles.Admin)]
         public ActionResult<Armor> Update([FromBody] Armor data)
         {
             var stats = data.stats;
@@ -91,6 +95,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult Delete(int id)
         {
             var result = ArmorService.Delete(id);

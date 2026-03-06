@@ -1,6 +1,8 @@
 using archolosDotNet.Models.UserNS;
 using archolosDotNet.Services.UserNS;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace archolosDotNet.Controllers
 {
@@ -19,6 +21,15 @@ namespace archolosDotNet.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpDelete("logout")]
+        [Authorize]
+        public ActionResult Logout([FromQuery] string token)
+        {
+            authService.Logout(token);
+
+            return NoContent();
         }
 
         [HttpPost("refresh-token")]

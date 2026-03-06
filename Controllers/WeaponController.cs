@@ -2,7 +2,9 @@ using archolosDotNet.Models.Extensions;
 using archolosDotNet.Models.Item.WeaponNS;
 using archolosDotNet.Models.Pagination;
 using archolosDotNet.Models.Payload;
+using archolosDotNet.Models.UserNS;
 using archolosDotNet.Services.Item;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace archolosDotNet.Controllers
@@ -33,6 +35,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public ActionResult<Weapon> Create(Weapon data)
         {
             try
@@ -46,6 +49,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult Update(Weapon data)
         {
             try
@@ -66,6 +70,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult Delete(int id)
         {
             var result = WeaponService.Delete(id);
