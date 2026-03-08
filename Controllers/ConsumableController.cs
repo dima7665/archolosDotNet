@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
+public class ReqPayload
+{
+    public int page { get; set; }
+}
+
 namespace archolosDotNet.Controllers
 {
     [Route("api/[controller]")]
@@ -17,7 +22,7 @@ namespace archolosDotNet.Controllers
         private readonly IConsumableService consumableService = service;
 
         [HttpGet]
-        public Task<PagedResult<Consumable>> GetAll([FromBody] ListPayload<ConsumableFilter> data)
+        public Task<PagedResult<Consumable>> GetAll([FromQuery] ListPayload<ConsumableFilter> data)
         {
             return consumableService.GetAll(data.filter).toPagedResultAsync(data.pagination);
         }

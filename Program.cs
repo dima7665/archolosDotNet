@@ -40,6 +40,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+var corsPolicyName = "localhostAllowOrigin";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicyName, builder =>
+    {
+        builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,7 +63,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors(corsPolicyName);
 app.MapControllers();
 
 app.Run();

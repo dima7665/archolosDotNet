@@ -16,7 +16,7 @@ namespace archolosDotNet.Controllers
         private readonly IMiscService MiscService = service;
 
         [HttpGet]
-        public Task<PagedResult<Misc>> GetAll([FromBody] ListPayload<MiscFilter> data)
+        public Task<PagedResult<Misc>> GetAll([FromQuery] ListPayload<MiscFilter> data)
         {
             return MiscService.GetAll(data.filter).toPagedResultAsync(data.pagination);
         }
@@ -35,7 +35,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRoles.Admin)]
+        // [Authorize(Roles = UserRoles.Admin)]
         public ActionResult<Misc> Create(Misc data)
         {
             try
