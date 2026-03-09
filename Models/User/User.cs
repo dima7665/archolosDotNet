@@ -28,7 +28,7 @@ public class SimpleUser
     public UserRole role { get; set; }
 
     public SimpleUser() { }
-    
+
     [SetsRequiredMembers]
     public SimpleUser(User data)
     {
@@ -60,7 +60,7 @@ public class Tokens
 
 public enum UserRole
 {
-    Super,
-    Admin,
-    Other
+    Super = 1,
+    Admin = 2,
+    Other = 3
 }

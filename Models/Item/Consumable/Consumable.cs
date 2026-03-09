@@ -20,7 +20,7 @@ public class Consumable : BaseItem, IConsumable
 
 public class ConsumableStat
 {
-    public required ConsumableAttr stat { get; set; }
+    public required ConsumableAttr name { get; set; }
     public bool isPermanent { get; set; }
     public bool isPercentage { get; set; }
     public int? duration { get; set; }

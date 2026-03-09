@@ -26,11 +26,11 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
             list = list.Where(i => i.type == filter.type);
         }
 
-        list = list.Include(i => i.consumableStats!.OrderBy(s => s.stat));
+        list = list.Include(i => i.consumableStats!.OrderBy(s => s.name));
 
         if (filter != null && filter.stat.HasValue)
         {
-            list = list.Where(i => i.consumableStats!.Any(s => s.stat == filter.stat));
+            list = list.Where(i => i.consumableStats!.Any(s => s.name == filter.stat));
         }
 
         if (filter != null && filter.isPermanent.HasValue)
@@ -98,7 +98,7 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
         // Remove stats
         foreach (var cs in curStats)
         {
-            var curStatUpdateData = stats.Find(s => cs.stat == s.stat && cs.isPermanent == s.isPermanent);
+            var curStatUpdateData = stats.Find(s => cs.name == s.name && cs.isPermanent == s.isPermanent);
 
             if (curStatUpdateData == null)
             {
@@ -109,7 +109,7 @@ public class ConsumableService(ApplicationDbContext context) : IConsumableServic
         // Add or update stats
         foreach (var s in stats)
         {
-            var existedStat = curStats.Find(cs => cs.stat == s.stat && cs.isPermanent == s.isPermanent);
+            var existedStat = curStats.Find(cs => cs.name == s.name && cs.isPermanent == s.isPermanent);
 
             if (existedStat == null)
             {

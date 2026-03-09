@@ -2,37 +2,37 @@ namespace archolosDotNet.Models.Item.Enums;
 
 public enum WeaponType
 {
-    Onehanded,
+    Onehanded = 1,
 
-    Twohanded,
+    Twohanded = 2,
 
-    Bow,
+    Bow = 3,
 
-    Crossbow
+    Crossbow = 4
 }
 
 public enum WeaponSkill
 {
-    Onehanded,
+    Onehanded = 1,
 
-    Twohanded,
+    Twohanded = 2,
 
-    Bow,
+    Bow = 3,
 
-    Crossbow,
+    Crossbow = 4,
 
-    Magic
+    Magic = 5
 }
 
 public enum WeaponDamageType
 {
-    Blade,
+    Blade = 1,
 
-    Blunt,
+    Blunt = 2,
 
-    Magic,
+    Magic = 3,
 
-    Arrow,
+    Arrow = 4,
 
-    Fire
+    Fire = 5
 }

@@ -2,22 +2,22 @@ namespace archolosDotNet.Models.Item.Enums;
 
 public enum RecipeSkill
 {
-    Alchemy,
+    Alchemy = 1,
 
-    Cooking,
+    Cooking = 2,
 
-    Smithing,
+    Smithing = 3,
 
-    Bowmaking
+    Bowmaking = 4
 }
 
 public enum RecipeItemType
 {
-    Consumable,
+    Consumable = 1,
 
-    Weapon,
+    Weapon = 2,
 
-    Armor,
-    
-    Misc
+    Armor = 3,
+
+    Misc = 4
 }

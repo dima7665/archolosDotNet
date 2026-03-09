@@ -43,7 +43,7 @@ namespace archolosDotNet.Database
             // Consumable
             modelBuilder.Entity<Consumable>().HasMany(e => e.consumableStats).WithOne().HasForeignKey(e => e.consumableId).IsRequired();
             modelBuilder.Entity<ConsumableStat>().HasOne<Consumable>().WithMany(e => e.consumableStats).HasForeignKey(e => e.consumableId).IsRequired();
-            modelBuilder.Entity<ConsumableStat>().HasIndex(e => new { e.consumableId, e.stat, e.isPermanent }).IsUnique();
+            modelBuilder.Entity<ConsumableStat>().HasIndex(e => new { e.consumableId, e.name, e.isPermanent }).IsUnique();
 
             // Armor
             modelBuilder.Entity<Armor>().HasMany(e => e.stats).WithOne().HasForeignKey(e => e.armorId).IsRequired();
