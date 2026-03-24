@@ -16,7 +16,7 @@ namespace archolosDotNet.Controllers
         private readonly IWeaponService WeaponService = service;
 
         [HttpGet]
-        public Task<PagedResult<Weapon>> GetAll([FromBody] ListPayload<WeaponFilter> data)
+        public Task<PagedResult<Weapon>> GetAll([FromQuery] ListPayload<WeaponFilter> data)
         {
             return WeaponService.GetAll(data.filter).toPagedResultAsync(data.pagination);
         }

@@ -17,7 +17,7 @@ namespace archolosDotNet.Controllers
         private readonly IArmorService ArmorService = service;
 
         [HttpGet]
-        public Task<PagedResult<Armor>> GetAll([FromBody] ListPayload<ArmorFilter> data)
+        public Task<PagedResult<Armor>> GetAll([FromQuery] ListPayload<ArmorFilter> data)
         {
             return ArmorService.GetAll(data.filter).toPagedResultAsync(data.pagination);
         }

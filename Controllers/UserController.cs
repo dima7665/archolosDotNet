@@ -15,7 +15,7 @@ namespace archolosDotNet.Controllers
     {
         [HttpGet]
         [Authorize(Roles = UserRoles.Super)]
-        public PagedResult<SimpleUser> GetAll([FromBody] ListPayload<UserFilter> data)
+        public PagedResult<SimpleUser> GetAll([FromQuery] ListPayload<UserFilter> data)
         {
             return userService.GetAll().toPagedResult(data.pagination);
         }

@@ -17,7 +17,7 @@ namespace archolosDotNet.Controllers
         private readonly IRecipeService recipeService = service;
 
         [HttpGet]
-        public PagedResult<RecipeShort> GetAll([FromBody] ListPayload<RecipeFilter> data)
+        public PagedResult<RecipeShort> GetAll([FromQuery] ListPayload<RecipeFilter> data)
         {
             return recipeService.GetAll(data.filter).toPagedResult(data.pagination);
         }
