@@ -5,10 +5,13 @@ using archolosDotNet.Models.Item.WeaponNS;
 using archolosDotNet.Models.Item.Miscellaneous;
 using archolosDotNet.Models.Item.ArmorNS;
 using archolosDotNet.Models.SelectNS;
+using archolosDotNet.Models.Validation;
 
 namespace archolosDotNet.Models.Item.RecipeNS;
 
-public class Recipe : BaseItem
+[RecipeItemRelations]
+[RecipeValidation]
+public class Recipe : BaseItem, IRecipeItemRelations
 {
     public required ICollection<RecipeIngredient> ingredients { get; set; } = [];
 
@@ -28,7 +31,8 @@ public class Recipe : BaseItem
     public Armor? armor { get; set; }
 }
 
-public class RecipeIngredient
+[RecipeItemRelations]
+public class RecipeIngredient : IRecipeItemRelations
 {
     [Key]
     public int id { get; set; }
@@ -93,4 +97,16 @@ public class IngredientsList
     public List<SelectOption> misc { get; set; } = [];
     public List<SelectOption> consumables { get; set; } = [];
     public List<SelectOption> weapons { get; set; } = [];
+}
+
+public interface IRecipeItemRelations
+{
+    public int? consumableId { get; set; }
+    public Consumable? consumable { get; set; }
+
+    public int? weaponId { get; set; }
+    public Weapon? weapon { get; set; }
+
+    public int? miscId { get; set; }
+    public Misc? misc { get; set; }
 }
