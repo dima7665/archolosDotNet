@@ -38,6 +38,13 @@ public class SimpleUser
         lastName = data.lastName;
         role = data.role;
     }
+
+    public string ToStringRole()
+    {
+        if (role == UserRole.Super) return "Super";
+        if (role == UserRole.Admin) return "Admin";
+        return "Other";
+    }
 }
 
 public class LoginRequest

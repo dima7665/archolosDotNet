@@ -35,7 +35,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        // [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.Admin)]
         public ActionResult<Misc> Create(Misc data)
         {
             try

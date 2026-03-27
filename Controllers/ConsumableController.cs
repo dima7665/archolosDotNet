@@ -41,7 +41,7 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost]
-        // [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.Admin)]
         public ActionResult<Consumable> Create(Consumable data)
         {
             var stats = data.consumableStats;

@@ -32,9 +32,9 @@ namespace archolosDotNet.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public ActionResult LoginWithToken([FromQuery] string token)
+        public ActionResult LoginWithToken([FromBody] TokenPayload data)
         {
-            var result = authService.RefreshTokens(token);
+            var result = authService.RefreshTokens(data);
 
             if (result == null)
             {

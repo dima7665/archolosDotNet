@@ -17,7 +17,7 @@ public class JwtService(IConfiguration configuration)
         List<Claim> claims = [
             new Claim(ClaimTypes.Email, user.email),
               new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
-              new Claim(ClaimTypes.Role, user.role.ToString()),
+              new Claim(ClaimTypes.Role, user.ToStringRole()),
         ];
 
         // List<string> roleNames = dbContext.UserRoles.Where(Uri => Uri.userId == user.id).Select(Uri => Uri.role.name).ToList();

@@ -9,3 +9,8 @@ public class RefreshToken
 
     public User user { get; set; }
 }
+
+public class TokenPayload
+{
+    public string token { get; set; }
+}

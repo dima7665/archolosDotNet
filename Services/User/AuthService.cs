@@ -9,7 +9,7 @@ public interface IAuthService
 {
     public LoginResponse? Login(LoginRequest data);
     public void Logout(string token);
-    public Tokens? RefreshTokens(string token);
+    public Tokens? RefreshTokens(TokenPayload data);
 }
 
 public class AuthService(ApplicationDbContext dbContext, JwtService jwtService, IHttpContextAccessor httpContextAccessor) : IAuthService
@@ -51,10 +51,9 @@ public class AuthService(ApplicationDbContext dbContext, JwtService jwtService, 
         };
     }
 
-    public Tokens? RefreshTokens(string token)
+    public Tokens? RefreshTokens(TokenPayload data)
     {
-
-        RefreshToken? refreshToken = dbContext.RefreshTokens.Include(r => r.user).SingleOrDefault(r => r.token == token);
+        RefreshToken? refreshToken = dbContext.RefreshTokens.Include(r => r.user).SingleOrDefault(r => r.token == data.token);
 
         if (refreshToken is null || refreshToken.expiresOn < DateTime.UtcNow)
         {

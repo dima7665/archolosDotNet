@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using archolosDotNet.Models.Extensions;
 using archolosDotNet.Models.Pagination;
 using archolosDotNet.Models.Payload;
@@ -46,6 +47,20 @@ namespace archolosDotNet.Controllers
             var result = userService.Delete(id);
 
             return result ? NoContent() : NotFound();
+        }
+
+        [HttpGet("get")]
+        [Authorize]
+        public ActionResult<SimpleUser?> GetByAccessToken()
+        {
+            var id = User.Claims.SingleOrDefault(a => a.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (id != null)
+            {
+                return userService.GetUserById(int.Parse(id));
+            }
+
+            return NotFound();
         }
     }
 }

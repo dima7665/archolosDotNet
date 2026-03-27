@@ -10,6 +10,7 @@ public interface IUserService
     public bool Delete(int id);
 
     public SimpleUser? GetUserByEmail(string email);
+    public SimpleUser? GetUserById(int id);
 }
 
 public class UserService(ApplicationDbContext context) : IUserService
@@ -58,6 +59,13 @@ public class UserService(ApplicationDbContext context) : IUserService
 
     public SimpleUser? GetUserByEmail(string email)
     {
-        return dbContext.Users.Select(u => new SimpleUser(u)).SingleOrDefault(u => u.email == email);
+        var user = dbContext.Users.SingleOrDefault(u => u.email == email);
+        return user == null ? null : new SimpleUser(user);
+    }
+
+    public SimpleUser? GetUserById(int id)
+    {
+        var user = dbContext.Users.Find(id);
+        return user == null ? null : new SimpleUser(user);
     }
 }
